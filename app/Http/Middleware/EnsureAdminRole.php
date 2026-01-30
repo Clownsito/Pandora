@@ -4,16 +4,19 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class EnsureAdminRole
 {
+    /**
+     * Handle an incoming request.
+     * Permite acceso solo a usuarios con rol 'admin'.
+     */
     public function handle(Request $request, Closure $next)
     {
-        $user = Auth::user();
+        $user = $request->user();
 
-        if (!$user || !$user->isAdmin()) {
-            abort(403, 'Acceso solo para administradores');
+        if (! $user || ! $user->isAdmin()) {
+            abort(403, 'Acceso denegado.');
         }
 
         return $next($request);

@@ -10,12 +10,9 @@ class ProductSuggestionController extends Controller
 {
     public function __invoke(CachedProduct $product): JsonResponse
     {
-        $service = app(SuggestedPriceService::class);
-
-        $suggestions = $service->getSuggestions($product);
-
         return response()->json([
-            'suggestions' => $suggestions,
+            'suggestions' => app(SuggestedPriceService::class)
+                ->getSuggestions($product),
         ]);
     }
 }

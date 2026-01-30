@@ -10,21 +10,17 @@ class SuggestedPriceService
     {
         $cost = (float) $product->cost;
 
-        // Reglas simples (después las refinamos)
-        $webMargin = 0.30;          // 30%
-        $marketMargin = 0.40;       // 40%
-
-        $webPrice = round($cost / (1 - $webMargin));
-        $marketplacePrice = round($cost / (1 - $marketMargin));
+        $webMargin = 0.30;
+        $marketMargin = 0.40;
 
         return [
             'web' => [
-                'price'  => $webPrice,
-                'margin' => $webMargin * 100,
+                'price'  => round($cost / (1 - $webMargin)),
+                'margin' => 30,
             ],
             'marketplace' => [
-                'price'  => $marketplacePrice,
-                'margin' => $marketMargin * 100,
+                'price'  => round($cost / (1 - $marketMargin)),
+                'margin' => 40,
             ],
         ];
     }

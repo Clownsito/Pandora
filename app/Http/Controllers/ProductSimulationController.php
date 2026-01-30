@@ -19,18 +19,16 @@ class ProductSimulationController extends Controller
             'marketplace_id' => 'nullable|exists:marketplaces,id',
         ]);
 
-        $marketplace = null;
+        $marketplace = $request->marketplace_id
+            ? Marketplace::find($request->marketplace_id)
+            : null;
 
-        if ($request->marketplace_id) {
-            $marketplace = Marketplace::find($request->marketplace_id);
-        }
-
-        $result = $service->simulate(
-            product: $product,
-            salePrice: (float) $request->sale_price,
-            marketplace: $marketplace
+        return response()->json(
+            $service->simulate(
+                product: $product,
+                salePrice: (float) $request->sale_price,
+                marketplace: $marketplace
+            )
         );
-
-        return response()->json($result);
     }
 }
