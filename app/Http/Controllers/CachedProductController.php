@@ -63,50 +63,43 @@ class CachedProductController extends Controller
             'csv_file' => 'required|file|mimes:csv,txt',
         ]);
 
-        $file = $request->file('csv_file');
         $companyId = Auth::user()->company_id;
-
         $updated = 0;
         $ignored = 0;
 
-        try {
-            $handle = fopen($file->getRealPath(), 'r');
-            $header = fgetcsv($handle, 0, ",");
+        $handle = fopen($request->file('csv_file')->getRealPath(), 'r');
+        $header = fgetcsv($handle);
 
-            $columns = array_map(fn($h) => mb_strtolower(trim($h)), $header);
-            $skuIdx = array_search('sku', $columns);
-            $articuloIdx = array_search('articulo', $columns);
-            $stockIdx = array_search('q.saldo', $columns);
-            $costIdx = array_search('costo promedio', $columns);
+        $columns = array_map(fn($h) => mb_strtolower(trim($h)), $header);
+        $skuIdx = array_search('sku', $columns);
+        $articuloIdx = array_search('articulo', $columns);
+        $stockIdx = array_search('q.saldo', $columns);
+        $costIdx = array_search('costo promedio', $columns);
 
-            while (($row = fgetcsv($handle, 0, ",")) !== false) {
+        while (($row = fgetcsv($handle)) !== false) {
 
-                $sku = trim($row[$skuIdx] ?? '');
-                if ($sku === '') {
-                    $ignored++;
-                    continue;
-                }
-
-                $product = CachedProduct::where('company_id', $companyId)
-                    ->where('sku', $sku)
-                    ->first();
-
-                if ($product) {
-                    $product->name  = $row[$articuloIdx] ?? $product->name;
-                    $product->stock = (int) $row[$stockIdx];
-                    $product->cost  = is_numeric($row[$costIdx]) ? floatval($row[$costIdx]) : $product->cost;
-                    $product->save();
-                    $updated++;
-                } else {
-                    $ignored++;
-                }
+            $sku = trim($row[$skuIdx] ?? '');
+            if ($sku === '') {
+                $ignored++;
+                continue;
             }
 
-            fclose($handle);
+            $product = CachedProduct::where('company_id', $companyId)
+                ->where('sku', $sku)
+                ->first();
 
-        } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage());
+            if ($product) {
+                $product->name  = $row[$articuloIdx] ?? $product->name;
+                $product->stock = (int) $row[$stockIdx];
+                $product->cost  = is_numeric($row[$costIdx]) ? floatval($row[$costIdx]) : $product->cost;
+                $product->save();
+                $updated++;
+            } else {
+                $ignored++;
+            }
         }
+
+        fclose($handle);
 
         return back()->with('success', "Actualizados: $updated | Ignorados: $ignored");
     }
@@ -115,7 +108,7 @@ class CachedProductController extends Controller
     // IMPORT AUTOMÁTICO KAME
     // ===========================
 
-    public function importBotFile(Request $request)
+    public function importBotFile()
     {
         $filePath = 'C:/data/pandora/inventory/inventory_current.csv';
 
@@ -127,44 +120,39 @@ class CachedProductController extends Controller
         $updated = 0;
         $ignored = 0;
 
-        try {
-            $handle = fopen($filePath, 'r');
-            $header = fgetcsv($handle, 0, ",");
+        $handle = fopen($filePath, 'r');
+        $header = fgetcsv($handle);
 
-            $columns = array_map(fn($h) => mb_strtolower(trim($h)), $header);
-            $skuIdx = array_search('sku', $columns);
-            $articuloIdx = array_search('articulo', $columns);
-            $stockIdx = array_search('q.saldo', $columns);
-            $costIdx = array_search('costo promedio', $columns);
+        $columns = array_map(fn($h) => mb_strtolower(trim($h)), $header);
+        $skuIdx = array_search('sku', $columns);
+        $articuloIdx = array_search('articulo', $columns);
+        $stockIdx = array_search('q.saldo', $columns);
+        $costIdx = array_search('costo promedio', $columns);
 
-            while (($row = fgetcsv($handle, 0, ",")) !== false) {
+        while (($row = fgetcsv($handle)) !== false) {
 
-                $sku = trim($row[$skuIdx] ?? '');
-                if ($sku === '') {
-                    $ignored++;
-                    continue;
-                }
-
-                $product = CachedProduct::where('company_id', $companyId)
-                    ->where('sku', $sku)
-                    ->first();
-
-                if ($product) {
-                    $product->name  = $row[$articuloIdx] ?? $product->name;
-                    $product->stock = (int) $row[$stockIdx];
-                    $product->cost  = is_numeric($row[$costIdx]) ? floatval($row[$costIdx]) : $product->cost;
-                    $product->save();
-                    $updated++;
-                } else {
-                    $ignored++;
-                }
+            $sku = trim($row[$skuIdx] ?? '');
+            if ($sku === '') {
+                $ignored++;
+                continue;
             }
 
-            fclose($handle);
+            $product = CachedProduct::where('company_id', $companyId)
+                ->where('sku', $sku)
+                ->first();
 
-        } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage());
+            if ($product) {
+                $product->name  = $row[$articuloIdx] ?? $product->name;
+                $product->stock = (int) $row[$stockIdx];
+                $product->cost  = is_numeric($row[$costIdx]) ? floatval($row[$costIdx]) : $product->cost;
+                $product->save();
+                $updated++;
+            } else {
+                $ignored++;
+            }
         }
+
+        fclose($handle);
 
         return back()->with('success', "Auto actualizado: $updated | Ignorados: $ignored");
     }
@@ -227,5 +215,33 @@ class CachedProductController extends Controller
         fclose($handle);
 
         return back()->with('success', "Estratégicos añadidos: $added | Ignorados: $ignored");
+    }
+
+    // ===========================
+    // ⭐ TOGGLE MANUAL ESTRELLA
+    // ===========================
+
+    public function toggleStrategic(CachedProduct $product)
+    {
+        $companyId = Auth::user()->company_id;
+
+        $existing = $product->productStrategy()
+            ->where('company_id', $companyId)
+            ->where('type', 'featured')
+            ->first();
+
+        if ($existing) {
+            $existing->delete();   // quitar estrella
+            return response()->json(['status' => 'removed']);
+        }
+
+        $product->productStrategy()->create([
+            'company_id' => $companyId,
+            'type' => 'featured',
+            'priority' => 50,
+            'created_by' => Auth::id(),
+        ]);
+
+        return response()->json(['status' => 'added']);
     }
 }

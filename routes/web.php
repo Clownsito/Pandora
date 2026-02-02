@@ -23,16 +23,20 @@ Route::get('/', function () {
 
 /*
 |--------------------------------------------------------------------------
-| Authenticated (empresa)
+| Authenticated company users
 |--------------------------------------------------------------------------
 */
 
 Route::middleware(['auth', 'company'])->group(function () {
 
+    // Dashboard
     Route::get('/dashboard', fn () => view('dashboard'))
         ->name('dashboard');
 
-    // Products
+    // ==========================
+    // PRODUCTS
+    // ==========================
+
     Route::get('/products', [CachedProductController::class, 'index'])
         ->name('products.index');
 
@@ -42,7 +46,19 @@ Route::middleware(['auth', 'company'])->group(function () {
     Route::post('/products/import-bot', [CachedProductController::class, 'importBotFile'])
         ->name('products.importBot');
 
-    // Suggestions & simulation
+    // ⭐ CSV estratégicos (suma — no borra)
+    Route::post('/products/import-strategic', [CachedProductController::class, 'importStrategic'])
+        ->name('products.importStrategic');
+
+    // ⭐ Toggle estrella manual
+    Route::post('/products/{product}/toggle-strategic',
+        [CachedProductController::class, 'toggleStrategic']
+    )->name('products.toggleStrategic');
+
+    // ==========================
+    // SUGGESTIONS & SIMULATOR
+    // ==========================
+
     Route::get('/products/{product}/suggestions', ProductSuggestionController::class)
         ->name('products.suggestions');
 
@@ -52,7 +68,10 @@ Route::middleware(['auth', 'company'])->group(function () {
     Route::post('/products/{product}/simulate', [ProductSimulationController::class, 'simulate'])
         ->name('products.simulate');
 
-    // Profile
+    // ==========================
+    // PROFILE
+    // ==========================
+
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
 
@@ -86,7 +105,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Admin margins (pricing engine)
+| Admin pricing engine
 |--------------------------------------------------------------------------
 */
 
@@ -107,11 +126,5 @@ Route::middleware(['auth', 'admin'])
 | Auth scaffolding
 |--------------------------------------------------------------------------
 */
-
-Route::middleware(['auth', 'company'])->group(function () {
-    
-
-    Route::post('/products/import-strategic', [CachedProductController::class, 'importStrategic'])->name('products.importStrategic');
-});
 
 require __DIR__.'/auth.php';

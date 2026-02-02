@@ -41,7 +41,14 @@ body, html{
     font-size:1.8rem;
     font-weight:700;
     color:#2f855a;
-    margin:12px 0;
+    margin:10px 0 4px;
+}
+
+.price-iva{
+    color:#4a6fa5;
+    font-weight:600;
+    font-size:1rem;
+    margin-bottom:12px;
 }
 
 .btn-compact{
@@ -98,17 +105,27 @@ input,select{
 ] as $key => $label)
 
 @php
-[$channel,$type] = explode('.', $key);
-$data = $suggestions[$channel][$type] ?? null;
+    [$channel,$type] = explode('.', $key);
+    $data = $suggestions[$channel][$type] ?? null;
 @endphp
 
 @if($data)
 <div class="card-modern">
     <h6>{{ $label }} ({{ $data['margin'] }}%)</h6>
+
     <div class="price-large">
         ${{ number_format($data['price'],0,',','.') }}
     </div>
-    <button class="btn-compact" onclick="usePrice({{ $data['price'] }})">Usar</button>
+
+    @php $iva = round($data['price'] * 1.19); @endphp
+
+    <div class="price-iva">
+        ${{ number_format($iva,0,',','.') }} Con IVA
+    </div>
+
+    <button class="btn-compact" onclick="usePrice({{ $data['price'] }})">
+        Usar
+    </button>
 </div>
 @else
 <div class="card-modern">
@@ -150,7 +167,6 @@ function formatMoney(n){
 }
 
 function simulate(){
-
 fetch('{{ route("products.simulate",$product) }}', {
     method:'POST',
     headers:{
@@ -183,10 +199,10 @@ fetch('{{ route("products.simulate",$product) }}', {
 }
 </script>
 
-<!-- BOTÓN CALCULADORA -->
+<!-- CALCULADORA FLOTANTE -->
+
 <div id="calc-btn">🧮</div>
 
-<!-- CALCULADORA -->
 <div id="calculator">
     <div class="calc-header">
         Calculadora <span onclick="toggleCalc()">✖</span>
@@ -235,7 +251,6 @@ fetch('{{ route("products.simulate",$product) }}', {
     justify-content:center;
     cursor:pointer;
     box-shadow:0 6px 18px rgba(0,0,0,.25);
-    z-index:9999;
 }
 
 #calculator{
@@ -247,9 +262,7 @@ fetch('{{ route("products.simulate",$product) }}', {
     border-radius:14px;
     box-shadow:0 10px 30px rgba(0,0,0,.25);
     display:none;
-    z-index:9999;
 }
-
 .calc-header{
     background:#3182ce;
     color:white;
@@ -257,7 +270,6 @@ fetch('{{ route("products.simulate",$product) }}', {
     display:flex;
     justify-content:space-between;
 }
-
 #calc-display{
     width:100%;
     padding:12px;
@@ -265,19 +277,15 @@ fetch('{{ route("products.simulate",$product) }}', {
     text-align:right;
     border:none;
 }
-
 .calc-grid{
     display:grid;
     grid-template-columns:repeat(4,1fr);
 }
-
 .calc-grid button{
     padding:16px;
     border:1px solid #eee;
     background:white;
-    font-size:1.1rem;
 }
-
 .equal{
     background:#3182ce;
     color:white;
@@ -293,24 +301,13 @@ document.getElementById('calc-btn').onclick = toggleCalc
 function toggleCalc(){
     calc.style.display = calc.style.display === 'block' ? 'none' : 'block'
 }
-
 function press(v){ display.value += v }
 function clearCalc(){ display.value='' }
 function del(){ display.value = display.value.slice(0,-1) }
-
 function calculate(){
     try{ display.value = eval(display.value) }
     catch{ display.value='Error' }
 }
-
-document.addEventListener('keydown', e=>{
-    if(calc.style.display!=='block') return
-
-    if(!isNaN(e.key)||e.key=='.') press(e.key)
-    if(['+','-','*','/'].includes(e.key)) press(e.key)
-    if(e.key==='Enter') calculate()
-    if(e.key==='Backspace') del()
-})
 </script>
 
 </x-app-layout>

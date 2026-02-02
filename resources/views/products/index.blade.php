@@ -1,8 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="fw-bold fs-4 text-dark">
-            Productos
-        </h2>
+        <h2 class="fw-bold fs-4 text-dark">Productos</h2>
     </x-slot>
 
     <div class="container mt-4">
@@ -11,80 +9,60 @@
         <div class="card mb-4 shadow-sm">
             <div class="card-body d-flex align-items-center">
                 <div class="flex-grow-1">
-                    <h5 class="fw-bold mb-3" style="color:#1d71b8;">
-                        <i class="bi bi-file-earmark-arrow-up me-2"></i>Importar stock desde archivo CSV
+                    <h5 class="fw-bold mb-3 text-primary">
+                        <i class="bi bi-file-earmark-arrow-up me-2"></i>Importar stock desde CSV
                     </h5>
 
                     <form method="POST" action="{{ route('products.import') }}" enctype="multipart/form-data"
                           id="csvImportForm" class="d-flex align-items-center">
                         @csrf
 
-                        <div class="mb-3 me-3" style="flex-grow:1; min-width: 300px;">
+                        <div class="mb-3 me-3 flex-grow-1" style="min-width:300px">
                             <div id="dropzone" class="border border-2 rounded py-4 px-3 text-center"
-                                 style="cursor:pointer;background:#fafbfc;border-color:#dde4ee;color:#6c757d;"
-                                 onclick="document.getElementById('csvFileInput').click()">
-
-                                <div id="dropzoneMsg">
-                                    <i class="bi bi-cloud-arrow-up fs-3 mb-1 text-primary"></i><br>
-                                    Arrastra aquí tu archivo CSV exportado de KAME<br>
-                                    <span class="d-block mt-1 small">o haz click para buscarlo</span>
-                                </div>
-
-                                <input type="file"
-                                       accept=".csv,application/vnd.ms-excel"
-                                       name="csv_file"
-                                       id="csvFileInput"
-                                       class="d-none"
-                                       required>
+                                 style="cursor:pointer;background:#fafbfc;color:#6c757d;"
+                                 onclick="csvFileInput.click()">
+                                <i class="bi bi-cloud-arrow-up fs-3 text-primary"></i><br>
+                                Arrastra CSV de KAME o haz click
+                                <input type="file" name="csv_file" id="csvFileInput"
+                                       accept=".csv" class="d-none" required>
                             </div>
                         </div>
 
-                        <button type="submit" id="importBtn"
-                                class="btn btn-primary"
-                                style="background:#1d71b8;border:none;"
-                                disabled>
-                            <i class="bi bi-upload me-1"></i>Importar stock
+                        <button id="importBtn" disabled class="btn btn-primary">
+                            <i class="bi bi-upload"></i> Importar
                         </button>
                     </form>
                 </div>
 
-                {{-- BOTONES LATERALES --}}
+                {{-- BOTONES --}}
                 <div class="ms-3 d-flex align-items-center">
 
-                    {{-- Reimportar KAME --}}
                     <form method="POST" action="{{ route('products.importBot') }}" class="me-2">
                         @csrf
-                        <button type="submit" class="btn btn-outline-info">
-                            <i class="bi bi-arrow-repeat me-1"></i>Reimportar archivo más actual
+                        <button class="btn btn-outline-info">
+                            <i class="bi bi-arrow-repeat"></i> Reimportar
                         </button>
                     </form>
 
-                    {{-- ⭐ Importar estratégicos --}}
                     <button id="btnImportStrategic" class="btn btn-warning">
                         ⭐ Importar estratégicos
                     </button>
 
-                    <form id="formImportStrategic"
-                          method="POST"
+                    <form id="formImportStrategic" method="POST"
                           action="{{ route('products.importStrategic') }}"
-                          enctype="multipart/form-data"
-                          style="display:none;">
+                          enctype="multipart/form-data" class="d-none">
                         @csrf
-                        <input type="file"
-                               name="strategic_csv"
-                               accept=".csv"
-                               id="inputImportStrategic">
+                        <input type="file" name="strategic_csv" id="inputImportStrategic" accept=".csv">
                     </form>
                 </div>
             </div>
         </div>
 
-        {{-- BUSCADOR + FILTRO --}}
+        {{-- BUSCADOR --}}
         <form method="GET" action="{{ route('products.index') }}" class="row g-2 mb-4">
             <div class="col-md-6">
-                <input type="text" name="q" value="{{ request('q') }}"
-                       class="form-control"
-                       placeholder="Buscar por SKU o nombre">
+                <input class="form-control" name="q" value="{{ request('q') }}"
+                       placeholder="Buscar SKU o nombre">
             </div>
 
             <div class="col-md-2">
@@ -92,14 +70,13 @@
             </div>
 
             <div class="col-md-2">
-                <a href="{{ route('products.index') }}"
-                   class="btn btn-outline-secondary w-100">
+                <a href="{{ route('products.index') }}" class="btn btn-outline-secondary w-100">
                     Limpiar
                 </a>
             </div>
 
             <div class="col-md-2">
-                <a href="{{ route('products.index', ['featured' => 1]) }}"
+                <a href="{{ route('products.index',['featured'=>1]) }}"
                    class="btn btn-warning w-100">
                     ⭐ Estratégicos
                 </a>
@@ -108,7 +85,7 @@
 
         {{-- TABLA --}}
         <div class="card shadow-sm">
-            <table class="table table-hover mb-0 align-middle">
+            <table class="table table-hover align-middle mb-0">
                 <thead class="table-dark">
                     <tr>
                         <th>SKU</th>
@@ -122,45 +99,45 @@
                 </thead>
                 <tbody>
                     @forelse($products as $product)
-                        <tr>
-                            <td>{{ $product->sku }}</td>
-                            <td>{{ $product->name }}</td>
-                            <td class="text-end">$ {{ number_format($product->cost, 0, ',', '.') }}</td>
-                            <td class="text-end">{{ $product->stock }}</td>
+                    <tr>
+                        <td>{{ $product->sku }}</td>
+                        <td>{{ $product->name }}</td>
+                        <td class="text-end">$ {{ number_format($product->cost,0,',','.') }}</td>
+                        <td class="text-end">{{ $product->stock }}</td>
 
-                            <td class="text-center">
-                                @if($product->stock_status === 'rojo')
-                                    <span class="badge bg-danger">Crítico</span>
-                                @elseif($product->stock_status === 'amarillo')
-                                    <span class="badge bg-warning text-dark">Alerta</span>
-                                @else
-                                    <span class="badge bg-success">OK</span>
-                                @endif
-                            </td>
+                        <td class="text-center">
+                            @if($product->stock_status === 'rojo')
+                                <span class="badge bg-danger">Crítico</span>
+                            @elseif($product->stock_status === 'amarillo')
+                                <span class="badge bg-warning text-dark">Alerta</span>
+                            @else
+                                <span class="badge bg-success">OK</span>
+                            @endif
+                        </td>
 
-                            {{-- ⭐ ESTADO ESTRATÉGICO --}}
-                            <td class="text-center fs-4">
-                                @if($product->productStrategy)
-                                    <span class="text-warning">⭐</span>
-                                @else
-                                    <span class="text-secondary">☆</span>
-                                @endif
-                            </td>
+                        {{-- ⭐ CLICKABLE --}}
+                        <td class="text-center fs-4">
+                            <span
+                                class="strategic-star {{ $product->productStrategy ? 'text-warning' : 'text-secondary' }}"
+                                data-id="{{ $product->id }}"
+                                style="cursor:pointer">
+                                {{ $product->productStrategy ? '⭐' : '☆' }}
+                            </span>
+                        </td>
 
-                            {{-- SIMULAR --}}
-                            <td class="text-center">
-                                <button class="btn btn-primary btn-sm"
-                                    onclick="window.location.href='{{ route('products.simulate.view', $product) }}'">
-                                    ▶ Simular
-                                </button>
-                            </td>
-                        </tr>
+                        <td class="text-center">
+                            <button class="btn btn-primary btn-sm"
+                                onclick="location.href='{{ route('products.simulate.view',$product) }}'">
+                                ▶ Simular
+                            </button>
+                        </td>
+                    </tr>
                     @empty
-                        <tr>
-                            <td colspan="7" class="text-center text-muted py-4">
-                                No se encontraron productos
-                            </td>
-                        </tr>
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">
+                            No se encontraron productos
+                        </td>
+                    </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -170,51 +147,56 @@
     {{-- ICONOS --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-    {{-- DRAG & DROP KAME --}}
+    {{-- DRAG DROP --}}
     <script>
-const dropzone = document.getElementById('dropzone');
-const fileInput = document.getElementById('csvFileInput');
-const importBtn = document.getElementById('importBtn');
+const csvFileInput = document.getElementById('csvFileInput')
+const dropzone = document.getElementById('dropzone')
+const importBtn = document.getElementById('importBtn')
 
-function updateButton(){
-    importBtn.disabled = !fileInput.files.length;
-}
+csvFileInput.addEventListener('change',()=>importBtn.disabled=!csvFileInput.files.length)
 
-fileInput.addEventListener('change', updateButton);
-
-dropzone.addEventListener('dragover', e => {
-    e.preventDefault();
-    dropzone.style.borderColor = '#1d71b8';
-    dropzone.style.background = '#eef5ff';
-});
-
-dropzone.addEventListener('dragleave', () => {
-    dropzone.style.borderColor = '#dde4ee';
-    dropzone.style.background = '#fafbfc';
-});
-
-dropzone.addEventListener('drop', e => {
-    e.preventDefault();
-    dropzone.style.borderColor = '#dde4ee';
-    dropzone.style.background = '#fafbfc';
-
-    if (!e.dataTransfer.files.length) return;
-    fileInput.files = e.dataTransfer.files;
-    updateButton();
-});
+dropzone.addEventListener('dragover',e=>{
+    e.preventDefault()
+    dropzone.style.background='#eef5ff'
+})
+dropzone.addEventListener('dragleave',()=>dropzone.style.background='#fafbfc')
+dropzone.addEventListener('drop',e=>{
+    e.preventDefault()
+    csvFileInput.files = e.dataTransfer.files
+    importBtn.disabled=false
+})
 </script>
 
-{{-- MINI UPLOADER ESTRATÉGICOS --}}
+{{-- MINI CSV ESTRATÉGICOS --}}
 <script>
-document.getElementById('btnImportStrategic').addEventListener('click', () => {
-    document.getElementById('inputImportStrategic').click();
-});
+btnImportStrategic.onclick=()=>inputImportStrategic.click()
+inputImportStrategic.onchange=()=>formImportStrategic.submit()
+</script>
 
-document.getElementById('inputImportStrategic').addEventListener('change', () => {
-    if (document.getElementById('inputImportStrategic').files.length) {
-        document.getElementById('formImportStrategic').submit();
+{{-- ⭐ TOGGLE MANUAL --}}
+<script>
+document.querySelectorAll('.strategic-star').forEach(star=>{
+    star.onclick=async()=>{
+
+        const res = await fetch(`/products/${star.dataset.id}/toggle-strategic`,{
+            method:'POST',
+            headers:{
+                'X-CSRF-TOKEN':'{{ csrf_token() }}',
+                'Accept':'application/json'
+            }
+        })
+
+        const d = await res.json()
+
+        if(d.status==='added'){
+            star.textContent='⭐'
+            star.classList.replace('text-secondary','text-warning')
+        }else{
+            star.textContent='☆'
+            star.classList.replace('text-warning','text-secondary')
+        }
     }
-});
+})
 </script>
 
 </x-app-layout>
