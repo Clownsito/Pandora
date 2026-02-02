@@ -15,6 +15,10 @@ class Marketplace extends Model
         'commission_percent',
     ];
 
+    protected $casts = [
+        'commission_percent' => 'float',
+    ];
+
     public function company()
     {
         return $this->belongsTo(Company::class);

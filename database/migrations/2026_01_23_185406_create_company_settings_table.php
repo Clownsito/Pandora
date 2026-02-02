@@ -9,7 +9,6 @@ return new class extends Migration {
     {
         Schema::create('company_settings', function (Blueprint $table) {
             $table->id();
-
             $table->unsignedBigInteger('company_id');
 
             // Stock semáforo
@@ -17,9 +16,13 @@ return new class extends Migration {
             $table->unsignedInteger('stock_amarillo_min');
             $table->unsignedInteger('stock_verde_min');
 
-            // Márgenes
+            // Márgenes existentes
             $table->unsignedDecimal('margen_min_percent', 5, 2);
             $table->unsignedDecimal('margen_max_percent', 5, 2);
+
+            // NUEVOS campos para márgenes dinámicos
+            $table->unsignedDecimal('margin_web_standard', 5, 2)->default(25.00)->after('stock_verde_min');
+            $table->unsignedDecimal('margin_marketplace_diff', 5, 2)->default(12.00)->after('margin_web_standard');
 
             $table->timestamps();
         });
@@ -27,9 +30,9 @@ return new class extends Migration {
         // Foreign key separada (MariaDB safe)
         Schema::table('company_settings', function (Blueprint $table) {
             $table->foreign('company_id')
-                  ->references('id')
-                  ->on('companies')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('companies')
+                ->onDelete('cascade');
         });
     }
 

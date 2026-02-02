@@ -4,45 +4,41 @@ namespace App\Services;
 
 class MarginCalculatorService
 {
-    /**
-     * Calcula márgenes según canal
-     */
     public function calculate(
         float $cost,
         float $salePrice,
-        ?float $commissionPercent = null
+        float $commissionPercent = 0
     ): array {
+
         if ($salePrice <= 0) {
-            throw new \InvalidArgumentException('El precio de venta debe ser mayor a 0');
+            throw new \InvalidArgumentException('Precio inválido');
         }
 
-        if ($cost < 0) {
-            throw new \InvalidArgumentException('El costo no puede ser negativo');
-        }
+        // Margen bruto
+        $grossProfit = $salePrice - $cost;
+        $grossMarginPercent = ($grossProfit / $salePrice) * 100;
 
-        // Margen en dinero
-        $marginAmount = $salePrice - $cost;
+        // Comisión marketplace
+        $commissionAmount = $salePrice * ($commissionPercent / 100);
 
-        // Margen bruto %
-        $grossMarginPercent = ($marginAmount / $salePrice) * 100;
-
-        // Margen real %
-        $realMarginPercent = $grossMarginPercent;
-
-        if (!is_null($commissionPercent)) {
-            $realMarginPercent = $grossMarginPercent - $commissionPercent;
-        }
+        // Margen real
+        $realRevenue = $salePrice - $commissionAmount;
+        $realProfit = $realRevenue - $cost;
+        $realMarginPercent = ($realProfit / $salePrice) * 100;
 
         return [
             'sale_price' => round($salePrice, 2),
             'cost' => round($cost, 2),
 
-            'margin_amount' => round($marginAmount, 2),
+            'commission_percent' => round($commissionPercent, 2),
+            'commission_amount' => round($commissionAmount, 2),
 
+            'gross_profit' => round($grossProfit, 2),
             'gross_margin_percent' => round($grossMarginPercent, 2),
-            'real_margin_percent' => round($realMarginPercent, 2),
 
-            'commission_percent' => $commissionPercent,
+            'real_revenue' => round($realRevenue, 2),
+            'real_profit' => round($realProfit, 2),
+            'real_margin_percent' => round($realMarginPercent, 2),
         ];
     }
 }

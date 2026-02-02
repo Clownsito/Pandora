@@ -26,25 +26,23 @@ class ProductSimulationService
         float $salePrice,
         ?Marketplace $marketplace = null
     ): array {
-        $settings = $product->company->settings;
 
-        // 1. Margen
+        $commission = $marketplace?->commission_percent ?? 0;
+
         $marginData = $this->marginCalculator->calculate(
-            cost: (float) $product->cost,
+            cost: (float)$product->cost,
             salePrice: $salePrice,
-            commissionPercent: $marketplace?->commission_percent
+            commissionPercent: $commission
         );
 
-        // 2. Semáforo de stock
         $stockStatus = $this->stockTrafficLight->evaluate(
             $product->stock,
-            $settings
+            $product->company->settings
         );
 
-        // 3. Política de margen
         $policyResult = $this->marginPolicy->validate(
             $marginData['real_margin_percent'],
-            $settings
+            $product->company->settings
         );
 
         return [

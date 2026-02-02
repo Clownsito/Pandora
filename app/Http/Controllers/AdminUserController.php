@@ -38,11 +38,7 @@ class AdminUserController extends Controller
 
     public function edit(User $user)
     {
-        return response()->json([
-            'id' => $user->id,
-            'email' => $user->email,
-            'name' => $user->name,
-        ]);
+        return view('admin.users.edit', compact('user'));
     }
 
     public function update(Request $request, User $user)

@@ -44,10 +44,47 @@ class CompanySettingController extends Controller
 
         $settings = CompanySetting::where('company_id', Auth::user()->company_id)->firstOrFail();
 
-        $settings->update($request->all());
+        $settings->update($request->all());<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\CompanySetting;
+use Illuminate\Support\Facades\Auth;
+
+class CompanySettingController extends Controller
+{
+    public function edit()
+    {
+        $companyId = Auth::user()->company_id;
+        $settings = CompanySetting::firstOrCreate(['company_id' => $companyId]);
+        return view('company-settings.edit', compact('settings'));
+    }
+
+    public function update(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+        $settings = CompanySetting::firstOrCreate(['company_id' => $companyId]);
+
+        $request->validate([
+            'margin_web_standard' => 'required|numeric|min:0|max:100',
+            'margin_marketplace_diff' => 'required|numeric|min:0|max:100',
+        ]);
+
+        $settings->update($request->only([
+            'margin_web_standard',
+            'margin_marketplace_diff',
+        ]));
+
+        return redirect()->route('company-settings.edit')
+                         ->with('success', 'Configuraci�f3n actualizada correctamente.');
+    }
+}
+
 
         return redirect()
             ->route('company-settings.edit')
             ->with('success', 'Configuración guardada correctamente');
     }
 }
+

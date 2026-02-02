@@ -1,9 +1,9 @@
 <x-app-layout>
     <style>
         .dashboard-container {
-            margin-top: 4rem; /* Baja las tarjetas desde arriba */
+            margin-top: 4rem;
             display: flex;
-            justify-content: center; /* Centra horizontalmente */
+            justify-content: center;
             flex-wrap: wrap;
             gap: 1.5rem;
         }
@@ -52,14 +52,12 @@
             transition: background .16s;
         }
 
-        .dashboard-card .tool-btn:hover,
-        .dashboard-card .tool-btn:focus {
+        .dashboard-card .tool-btn:hover {
             background: #16598f !important;
         }
 
         .disabled-btn {
             background: #b0b8c2 !important;
-            color: #fff !important;
             cursor: not-allowed;
             opacity: 0.7;
         }
@@ -71,44 +69,65 @@
     </style>
 
     <div class="dashboard-container">
+
+        <!-- Subir productos -->
         <div class="dashboard-card">
             <div class="card-title">
-                <i class="bi bi-upload" style="font-size:2.1rem; vertical-align:middle; color:#1d71b8;"></i><br>
+                <i class="bi bi-upload" style="font-size:2.1rem;color:#1d71b8;"></i><br>
                 Subir Productos
             </div>
-            <button class="btn tool-btn disabled-btn" tabindex="-1" aria-disabled="true" disabled>
-                Próximamente
-            </button>
+            <button class="btn tool-btn disabled-btn" disabled>Próximamente</button>
             <div class="small-italic">Esta función estará disponible pronto</div>
         </div>
 
+        <!-- Simulador -->
         <div class="dashboard-card">
             <div class="card-title">
-                <i class="bi bi-calculator" style="font-size:2rem; vertical-align:middle; color:#1d71b8;"></i><br>
+                <i class="bi bi-calculator" style="font-size:2rem;color:#1d71b8;"></i><br>
                 Calculadora de Margen
             </div>
             <a href="{{ url('/products') }}" class="btn tool-btn">Abrir simulador</a>
             <div>Simula precios y márgenes</div>
         </div>
 
+        <!-- Alertas -->
         <div class="dashboard-card">
             <div class="card-title">
-                <i class="bi bi-bell" style="font-size:2rem; vertical-align:middle; color:#1d71b8;opacity:.5;"></i><br>
+                <i class="bi bi-bell" style="font-size:2rem;color:#1d71b8;opacity:.5;"></i><br>
                 Alertas
             </div>
-            <button class="btn tool-btn disabled-btn" tabindex="-1" aria-disabled="true" disabled>Próximamente</button>
+            <button class="btn tool-btn disabled-btn" disabled>Próximamente</button>
             <div class="small-italic">Esta función estará disponible pronto</div>
         </div>
 
+        <!-- ADMIN -->
         @if(Auth::user()->isAdmin())
+
+            <!-- Usuarios -->
             <div class="dashboard-card">
                 <div class="card-title">
-                    <i class="bi bi-person-plus" style="font-size:2rem; vertical-align:middle; color:#1d71b8;"></i><br>
+                    <i class="bi bi-person-plus" style="font-size:2rem;color:#1d71b8;"></i><br>
                     Dar acceso
                 </div>
-                <a href="{{ route('admin.users.manage') }}" class="btn tool-btn">Crear y gestionar usuarios</a>
+                <a href="{{ route('admin.users.manage') }}" class="btn tool-btn">
+                    Crear y gestionar usuarios
+                </a>
             </div>
+
+            <!-- NUEVO: Márgenes -->
+            <div class="dashboard-card">
+                <div class="card-title">
+                    <i class="bi bi-graph-up-arrow" style="font-size:2rem;color:#1d71b8;"></i><br>
+                    Configurar márgenes
+                </div>
+                <a href="{{ route('admin.margins.index') }}" class="btn tool-btn">
+                    Editar porcentajes
+                </a>
+                <div>Controla sugerencias y rentabilidad</div>
+            </div>
+
         @endif
+
     </div>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">

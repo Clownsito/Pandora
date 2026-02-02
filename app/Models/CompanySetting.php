@@ -16,6 +16,8 @@ class CompanySetting extends Model
         'stock_verde_min',
         'margen_min_percent',
         'margen_max_percent',
+        'margin_web_standard',
+        'margin_marketplace_diff',
     ];
 
     public function company()
