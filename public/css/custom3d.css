@@ -1,0 +1,119 @@
+/* Contenedor general */
+.container-centered {
+    max-width: 900px;
+    margin: 30px auto 60px;
+    padding: 20px 30px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #2d3748;
+}
+
+/* Tarjetas modernas */
+.card-modern {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    text-align: center;
+    transition: box-shadow 0.3s ease;
+}
+
+.card-modern:hover {
+    box-shadow: 0 7px 25px rgba(0,0,0,0.15);
+}
+
+/* Encabezados de tarjetas */
+.card-modern h6 {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #334e68;
+    font-size: 1.1rem;
+}
+
+/* Precio grande */
+.price-large {
+    color: #2f855a;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin: 12px 0 6px;
+}
+
+/* Precio con IVA */
+.price-iva {
+    color: #4a6fa5;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 12px;
+}
+
+/* Botones compactos */
+.btn-compact {
+    border: 1px solid #3182ce;
+    background: white;
+    color: #3182ce;
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-compact:hover {
+    background-color: #3182ce;
+    color: white;
+}
+
+/* Botón principal */
+.btn-primary {
+    background: #3182ce;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-weight: 700;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #276096;
+}
+
+/* Input y select */
+input, select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e0;
+    margin-bottom: 16px;
+    font-size: 1rem;
+}
+
+/* Tablas */
+.table thead th {
+    background-color: #1d71b8;
+    color: white;
+}
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(29,113,184,0.3);
+}
+.table-hover tbody tr:hover {
+    background-color: #e2e9f7;
+}
+
+/* Contenedor resultado */
+#result {
+    margin-top: 20px;
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+/* Money style */
+.money {
+    color: #2f855a;
+    font-weight: 700;
+}
